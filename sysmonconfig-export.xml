@@ -5,8 +5,8 @@
   Master project:	https://github.com/SwiftOnSecurity/sysmon-config
   Master license:	Creative Commons Attribution 4.0 | You may privatize, fork, edit, teach, publish, or deploy for commercial use - with attribution in the text.
 
-  Fork version:	<N/A>
-  Fork author:	<N/A>
+  Fork version:	1.0
+  Fork author:	Márton Horváth
   Fork project:	<N/A>
   Fork license:	<N/A>
  
@@ -30,7 +30,7 @@
 -->
 
 <Sysmon schemaversion="3.30">
-	<HashAlgorithms>md5,sha256</HashAlgorithms>
+	<HashAlgorithms>sha1,sha256</HashAlgorithms>
 	<EventFiltering>
 
 	<!--SYSMON EVENT ID 1 : PROCESS CREATION-->
@@ -55,12 +55,7 @@
 			<IntegrityLevel condition="is">AppContainer</IntegrityLevel> <!--Microsoft:Windows: Don't care about sandboxed processes-->
 			<ParentCommandLine condition="begin with">%%SystemRoot%%\system32\csrss.exe ObjectDirectory=\Windows</ParentCommandLine> <!--Microsoft:Windows:CommandShell: Triggered when programs use the command shell, but without attribution-->
 			<ParentImage condition="is">C:\Windows\system32\SearchIndexer.exe</ParentImage> <!--Microsoft:Windows:Search: Launches many uninteresting sub-processes-->
-			<!--SECTION: Microsoft:Windows:Defender-->
-			<Image condition="begin with">C:\Program Files\Windows Defender</Image> <!--Microsoft:Windows:Defender in Win10-->
-			<Image condition="is">C:\Windows\System32\MpSigStub.exe</Image> <!--Microsoft:Windows: Microsoft Malware Protection Signature Update Stub-->
-			<Image condition="begin with">C:\Windows\SoftwareDistribution\Download\Install\AM_Base</Image> <!--Microsoft:Defender: Full signature updates-->
-			<Image condition="begin with">C:\Windows\SoftwareDistribution\Download\Install\AM_Delta</Image> <!--Microsoft:Defender: Delta signature updates-->
-			<Image condition="begin with">C:\Windows\SoftwareDistribution\Download\Install\AM_Engine</Image> <!--Microsoft:Defender: Engine updates-->
+			
 			<!--SECTION: Microsoft:Windows:svchost-->
 			<CommandLine condition="is">C:\Windows\System32\svchost.exe -k appmodel</CommandLine> <!--Microsoft:Windows 10-->
 			<CommandLine condition="is">C:\Windows\System32\svchost.exe -k dcomLaunch</CommandLine> <!--Microsoft:Windows dervices-->
@@ -93,13 +88,6 @@
 			<ParentImage condition="is">C:\Windows\Microsoft.NET\Framework\v4.0.30319\mscorsvw.exe</ParentImage> <!--Microsoft:DotNet-->
 			<ParentImage condition="is">C:\Windows\Microsoft.NET\Framework\v4.0.30319\ngentask.exe</ParentImage> <!--Microsoft:DotNet-->
 			<ParentImage condition="is">C:\Windows\Microsoft.NET\Framework\v4.0.30319\ngentask.exe</ParentImage> <!--Microsoft:DotNet: Spawns thousands of ngen.exe processes-->
-			<!--SECTION: Microsoft:Office-->
-			<Image condition="is">C:\Program Files (x86)\Microsoft Office\Office16\MSOSYNC.EXE</Image> <!--Microsoft:Office: Background process-->
-			<Image condition="is">C:\Program Files\Common Files\Microsoft Shared\OfficeSoftwareProtectionPlatform\OSPPSVC.EXE</Image> <!--Microsoft:Office: Background process-->
-			<!--SECTION: Microsoft:Office:Click2Run-->
-			<Image condition="is">C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe</Image> <!--Microsoft:Office: Background process-->
-			<ParentImage condition="end with">C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe</ParentImage> <!--Microsoft:Office: Background process-->
-			<ParentImage condition="is">C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeC2RClient.exe</ParentImage> <!--Microsoft:Office: Background process-->
 			<!--SECTION: Google-->
 			<CommandLine condition="begin with">"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --type=</CommandLine> <!--Google:Chrome: massive command-line arguments-->
 			<CommandLine condition="begin with">"C:\Program Files\Google\Chrome\Application\chrome.exe" --type=</CommandLine> <!--Google:Chrome: massive command-line arguments-->
@@ -130,22 +118,8 @@
 			<ParentImage condition="end with">C:\Program Files (x86)\Common Files\Adobe\OOBE\PDApp\P7\adobe_licutil.exe</ParentImage> <!--Adobe:License utility-->
 			<Image condition="end with">C:\Program Files (x86)\Common Files\Adobe\OOBE\PDApp\UWA\updaterstartuputility.exe</Image>
 			<ParentImage condition="is">C:\Program Files (x86)\Common Files\Adobe\OOBE\PDApp\UWA\updaterstartuputility.exe</ParentImage>
-			<!--SECTION: Adobe:Creative Cloud-->
-			<Image condition="end with">C:\Program Files (x86)\Adobe\Adobe Creative Cloud\ACC\Creative Cloud.exe</Image>
-			<ParentImage condition="end with">C:\Program Files (x86)\Adobe\Adobe Creative Cloud\ACC\Creative Cloud.exe</ParentImage>
-			<ParentImage condition="end with">C:\Program Files (x86)\Adobe\Adobe Creative Cloud\CCXProcess\CCXProcess.exe</ParentImage>
-			<ParentImage condition="end with">C:\Program Files (x86)\Adobe\Adobe Creative Cloud\CoreSync\CoreSync.exe</ParentImage>
-			<!--SECTION: Drivers-->
-			<CommandLine condition="begin with">"C:\Program Files\DellTPad\ApMsgFwd.exe" -s{</CommandLine>
-			<Image condition="begin with">C:\Program Files\NVIDIA Corporation\</Image> <!--Nvidia:Driver: routine actions-->
-			<Image condition="begin with">C:\Program Files\Realtek\</Image> <!--Realtek:Driver: routine actions-->
-			<ParentImage condition="end with">C:\Program Files\DellTPad\HidMonitorSvc.exe</ParentImage>
-			<ParentImage condition="end with">C:\Program Files\Realtek\Audio\HDA\RtkAudioService64.exe</ParentImage> <!--Realtek:Driver: routine actions-->
-			<!--SECTION: Dropbox-->
-			<Image condition="end with">C:\Program Files (x86)\Dropbox\Update\DropboxUpdate.exe</Image> <!--Dropbox:Updater: Lots of command-line arguments-->
-			<ParentImage condition="end with">C:\Program Files (x86)\Dropbox\Update\DropboxUpdate.exe</ParentImage>
-			<!--SECTION: Dell-->
-			<ParentImage condition="image">C:\Program Files (x86)\Dell\CommandUpdate\InvColPC.exe</ParentImage> <!--Dell:CommandUpdate: Detection process-->
+			<!--SECTION: Splunk-->
+			<ParentImage condition="contains">"splunkd.exe"</ParentImage> <!-- Splunk-related process calls -->
 		</ProcessCreate>
 
 	<!--SYSMON EVENT ID 2 : FILE CREATION TIME RETROACTIVELY CHANGED IN THE FILESYSTEM-->
@@ -203,6 +177,7 @@
 			<DestinationPort condition="is">22</DestinationPort> <!--SSH protocol-->
 			<DestinationPort condition="is">23</DestinationPort> <!--Telnet protocol-->
 			<DestinationPort condition="is">25</DestinationPort> <!--SMTP mail protocol-->
+			
 			<DestinationPort condition="is">3389</DestinationPort> <!--Microsoft:Windows:RDP-->
 			<DestinationPort condition="is">5800</DestinationPort> <!--VNC protocol-->
 			<DestinationPort condition="is">5900</DestinationPort> <!--VNC protocol-->
@@ -210,23 +185,7 @@
 			<DestinationPort condition="is">1080</DestinationPort> <!--Socks proxy port | Credit @ion-storm-->
 			<DestinationPort condition="is">3128</DestinationPort> <!--Socks proyx port | Credit @ion-storm-->
 			<DestinationPort condition="is">8080</DestinationPort> <!--Socks proxy port | Credit @ion-storm-->
-			<!--Ports: Tor-->
-			<DestinationPort condition="is">1723</DestinationPort> <!--Tor protocol | Credit @ion-storm-->
-			<DestinationPort condition="is">4500</DestinationPort> <!--Tor protocol | Credit @ion-storm-->
-			<DestinationPort condition="is">9001</DestinationPort> <!--Tor protocol [ http://www.computerworlduk.com/tutorial/security/tor-enterprise-2016-blocking-malware-darknet-use-rogue-nodes-3633907/ ] -->
-			<DestinationPort condition="is">9030</DestinationPort> <!--Tor protocol [ http://www.computerworlduk.com/tutorial/security/tor-enterprise-2016-blocking-malware-darknet-use-rogue-nodes-3633907/ ] -->
 		</NetworkConnect>
-		<NetworkConnect onmatch="exclude">
-			<Image condition="image">OneDrive.exe</Image> <!--Microsoft:OneDrive-->
-			<Image condition="image">Spotify.exe</Image> <!--Spotify-->
-			<Image condition="end with">AppData\Roaming\Dropbox\bin\Dropbox.exe</Image> <!--Dropbox-->
-			<!--SECTION: Microsoft-->
-			<Image condition="image">OneDriveStandaloneUpdater.exe</Image> <!--Microsoft:OneDrive-->
-			<DestinationHostname condition="end with">microsoft.com</DestinationHostname> <!--Microsoft:Update delivery-->
-			<DestinationHostname condition="end with">microsoft.com.akadns.net</DestinationHostname> <!--Microsoft:Update delivery-->
-			<DestinationHostname condition="end with">microsoft.com.nsatc.net</DestinationHostname> <!--Microsoft:Update delivery-->
-		</NetworkConnect>
-
 	<!--SYSMON EVENT ID 4 : RESERVED FOR SYSMON STATUS MESSAGES, THIS LINE IS INCLUDED FOR DOCUMENTATION PURPOSES ONLY-->
 		<!--DATA: UtcTime, State, Version, SchemaVersion-->
 		<!--Cannot be filtered.-->
